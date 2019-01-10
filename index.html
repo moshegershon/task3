@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <script src='node_modules/jquery/dist/jquery.js'></script>
+
+</head>
+
+<body>
+    <form>
+        <div class="container"></div>
+        <div class="row ">
+            <div id="Countries"></div>
+        </div>
+        <button id="getall" class="btn btn-primary">All</button>
+        <button id="getbystr" class="btn btn-primary">get by name</button>
+        <div class="row ">
+            <input id="inputbyname" type="text">
+        </div>
+    </form>
+    <script>
+        var template = `<div class="container">
+            <div class="row countries">
+                <div class="col-sm">
+    <img src="{{img}}" >
+    </div>
+    <div class="col-sm">
+    <div class>
+        {{name}}
+    </div>
+    <div>
+        {{toplevel}}
+    </div>
+    <div>
+        {{capital}}
+    </div>
+    <div>
+        {{ccode}} {{cname}} {{csymbol}} 
+    </div>
+</div>
+</div>
+</div>
+`
+        $("#getall").click(function (event) {
+            event.preventDefault();
+            $.ajax({
+                url: "https://restcountries.eu/rest/v2/all",
+                method: 'GET'
+            }).done(function (d) {
+                if (typeof d === 'string')
+                    d = JSON.parse(d);
+                console.log(d);
+                // debugger;
+                for (let i = 0; i < d.length; i++) {
+                    let o = i;
+                    let t = template;
+                    t = t.replace('{{img}}', d[o].flag);
+                    t = t.replace('{{name}}', d[o].name);
+                    t = t.replace('{{toplevel}}', d[o].topLevelDomain);
+                    t = t.replace('{{capital}}', d[o].capital);
+                    for (let i = 0; i < d[o].currencies.length; i++) {
+                        t = t.replace('{{ccode}}', d[o].currencies[0].code);
+                        t = t.replace('{{cname}}', d[o].currencies[0].name);
+                        t = t.replace('{{csymbol}}', d[o].currencies[0].symbol);
+                    }
+                    $('#Countries').append(t);
+                }
+            });
+        });
+        $("#getbystr").click(function (event) {
+            $('#Countries').val();
+            event.preventDefault();
+            var cname = $('#inputbyname').val();
+            $.ajax({
+                url: "https://restcountries.eu/rest/v2/name/" + cname,
+                method: 'GET'
+            }).done(function (d) {
+                if (typeof d === 'string')
+                    d = JSON.parse(d);
+                console.log(d);
+                // debugger;
+                for (let i = 0; i < d.length; i++) {
+                    let o = i;
+                    let t = template;
+                    t = t.replace('{{img}}', d[o].flag);
+                    t = t.replace('{{name}}', d[o].name);
+                    t = t.replace('{{toplevel}}', d[o].topLevelDomain);
+                    t = t.replace('{{capital}}', d[o].capital);
+                    for (let i = 0; i < d[o].currencies.length; i++) {
+                        t = t.replace('{{ccode}}', d[o].currencies[0].code);
+                        t = t.replace('{{cname}}', d[o].currencies[0].name);
+                        t = t.replace('{{csymbol}}', d[o].currencies[0].symbol);
+                    }
+                    $('#Countries').append(t);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
